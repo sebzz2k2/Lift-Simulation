@@ -1,0 +1,137 @@
+* {
+    font-family: "Arial", sans-serif;
+    font-weight: 400;
+}
+
+body {
+    margin: 10px;
+    padding: 0;
+}
+
+
+.control {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.control__button {
+    padding: 8px 16px;
+    margin: 8px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: transform 250ms;
+}
+
+.control__button:hover {
+    transform: scale(1.05);
+}
+
+.container {
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.control-btn {
+    margin: 8px;
+    padding: 8px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: transform 250ms;
+}
+
+.control-btn:hover {
+    transform: scale(1.05);
+}
+
+.floor {
+    height: 20%;
+    position: relative;
+}
+
+.floor__number {
+    color: #111;
+    padding: 12px 16px;
+    border-radius: 50%;
+    position: absolute;
+left: 56px;
+    top: 25%;
+}
+
+.lift {
+    display: block;
+    height: 100%;
+    width: 80px;
+    position: absolute;
+    left: 15%;
+    bottom: 1%;
+    border-radius: 8px;
+}
+
+.lift__door {
+    background-color: #333;
+    width: 50%;
+    height: 100%;
+    position: relative;
+    z-index: 2;
+}
+.lift__door-left {
+    float: left;
+}
+.lift__door-right {
+    float: right;
+}
+.topbar {
+    padding: 1rem 2rem;
+    background-color: #333;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #e6e6e6;
+    flex-grow: 1;
+}
+
+.input-group {
+    margin-left: 2rem;
+}
+
+label {
+    font-size: 1rem;
+    color: #e6e6e6;
+    margin-right: 0.5rem;
+}
+
+input[type="number"] {
+    padding: 0.5rem;
+    font-size: 1rem;
+    border-radius: 4px;
+    border: none;
+    box-sizing: border-box;
+    background-color: #444;
+    color: #ffffff;
+    margin-right: 1rem;
+    width: 80px;
+}
+
+button {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    color: #ffffff;
+    background-color: #007acc;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #005a99;
+}
