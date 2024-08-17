@@ -206,13 +206,15 @@ function check_for_scheduling() {
 }
 
 function start() {
-    if (input_lifts.value<=0) {
+    if (input_lifts.value<=0 || input_lifts.value> 5) {
         alert("Number of lifts should be a number between 1 and 5 to continue");
         document.getElementById("input-lifts").value = 0
+        return
     }
-    if (input_floors.value<=0) {
+    if (input_floors.value<=0 || input_floors.value > 15) {
         alert("Number of floors should be a number between 1 and 15 to continue");
         document.getElementById("input-floors").value = 0
+        return;
     }
     clearInterval(intervalId);
     q = [];
