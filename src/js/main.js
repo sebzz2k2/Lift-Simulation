@@ -207,11 +207,11 @@ function check_for_scheduling() {
 
 function start() {
     if (input_lifts.value<=0) {
-        alert("Please enter a number between 1 and 5 to continue");
+        alert("Number of lifts should be a number between 1 and 5 to continue");
         document.getElementById("input-lifts").value = 0
     }
     if (input_floors.value<=0) {
-        alert("Please enter a number between 1 and 15 to continue");
+        alert("Number of floors should be a number between 1 and 15 to continue");
         document.getElementById("input-floors").value = 0
     }
     clearInterval(intervalId);
