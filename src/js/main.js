@@ -25,7 +25,7 @@ function createLifts(n) {
         right_door.classList.add("lift__door", "lift__door-right");
         left_door.id = "ld" + i;
         right_door.id = "rd" + i;
-        lift.style.left = `${10 + 10 * i}%`;
+        lift.style.left = `${10 + 15 * i}%`;
         lift.appendChild(left_door);
         lift.appendChild(right_door);
         let liftObj = {
@@ -47,6 +47,7 @@ function createFloor(floor_number) {
 
     let new_up_btn = document.createElement("button");
     let up_text = document.createTextNode("U");
+
     let new_down_btn = document.createElement("button");
     let down_text = document.createTextNode("D");
     let new_br = document.createElement("br");
@@ -61,11 +62,27 @@ function createFloor(floor_number) {
     new_down_btn.appendChild(down_text);
     new_down_btn.id = "down" + floor_number;
 
+    let newBtnContainer = document.createElement("div");
+    newBtnContainer.className = "btnContainer";
+    if (floor_number === parseInt(input_floors.value)) {
+        console.log(floor_number);
+        //new_up_btn.style.display = "none";
+        new_up_btn.style.opacity = 0;
+        new_up_btn.disabled = true
+        new_up_btn.style.cursor = "default"
+    }
+    if (floor_number === 1) {
+        //new_down_btn.style.display = "none";
+        new_down_btn.style.opacity = 0;
+        new_down_btn.disabled = true
+        new_down_btn.style.cursor = "default";
+    }
     new_div.appendChild(new_up_btn);
     new_div.appendChild(new_br);
     new_div.appendChild(new_down_btn);
     new_div.appendChild(new_span);
-
+    let new_hr = document.createElement("hr");
+    new_div.appendChild(new_hr);
     container.insertBefore(new_div, container.childNodes[0]);
 }
 
@@ -206,13 +223,13 @@ function check_for_scheduling() {
 }
 
 function start() {
-    if (input_lifts.value<=0 || input_lifts.value> 5) {
-        alert("Number of lifts should be a number between 1 and 5 to continue");
+    if (input_lifts.value<=0 ) {
+        alert("Number of lifts should be a number above 1");
         document.getElementById("input-lifts").value = 0
         return
     }
-    if (input_floors.value<=0 || input_floors.value > 15) {
-        alert("Number of floors should be a number between 1 and 15 to continue");
+    if (input_floors.value<=0 ) {
+        alert("Number of floors should be a number above 1");
         document.getElementById("input-floors").value = 0
         return;
     }

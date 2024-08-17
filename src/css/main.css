@@ -4,8 +4,6 @@
 }
 
 body {
-    margin: 10px;
-    padding: 0;
 }
 
 
@@ -28,7 +26,9 @@ body {
 .control__button:hover {
     transform: scale(1.05);
 }
-
+.btnContainer {
+    /*display: flex;*/
+}
 .container {
     border-radius: 8px;
     padding: 12px;
@@ -57,22 +57,24 @@ body {
     padding: 12px 16px;
     border-radius: 50%;
     position: absolute;
-left: 56px;
+    right: 8px;
     top: 25%;
 }
 
 .lift {
     display: block;
     height: 100%;
-    width: 80px;
+    width: 40px;
     position: absolute;
     left: 15%;
     bottom: 1%;
     border-radius: 8px;
+    overflow: hidden;
+    border : 1px solid #333;
 }
 
 .lift__door {
-    background-color: #333;
+    background-color: #111;
     width: 50%;
     height: 100%;
     position: relative;
@@ -134,4 +136,10 @@ button {
 
 button:hover {
     background-color: #005a99;
+}
+
+hr {
+    height: 4px;
+    margin: 0;
+    background-color: #333;
 }
