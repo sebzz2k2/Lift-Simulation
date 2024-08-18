@@ -1,12 +1,11 @@
-
 let lifts = [];
 let q = [];
+let activeRequests = {};  // Track active lift requests per floor and direction
 let input_floors = document.getElementById("input-floors");
 let input_lifts = document.getElementById("input-lifts");
 let no_of_floors;
 let no_of_lifts;
 let intervalId;
-let tempInterval;
 
 let form = document.getElementById("form");
 form.addEventListener("click", function (e) {
@@ -65,16 +64,13 @@ function createFloor(floor_number) {
     let newBtnContainer = document.createElement("div");
     newBtnContainer.className = "btnContainer";
     if (floor_number === parseInt(input_floors.value)) {
-        console.log(floor_number);
-        //new_up_btn.style.display = "none";
         new_up_btn.style.opacity = 0;
-        new_up_btn.disabled = true
-        new_up_btn.style.cursor = "default"
+        new_up_btn.disabled = true;
+        new_up_btn.style.cursor = "default";
     }
     if (floor_number === 1) {
-        //new_down_btn.style.display = "none";
         new_down_btn.style.opacity = 0;
-        new_down_btn.disabled = true
+        new_down_btn.disabled = true;
         new_down_btn.style.cursor = "default";
     }
     new_div.appendChild(new_up_btn);
@@ -102,7 +98,7 @@ function closeDoor(e) {
 }
 
 function stop_lift(lift_no) {
-    for (lft of lifts) {
+    for (let lft of lifts) {
         if (lft.id == lift_no) {
             lft.moving = false;
         }
@@ -111,7 +107,6 @@ function stop_lift(lift_no) {
 
 function doorAnimation(e) {
     let target_id = e.target.id;
-    // NOTE :- BAD ASSUMPTION , MAX LIFTS = 9
     let lift_no = target_id[target_id.length - 1];
     let lift = document.getElementById("l" + lift_no);
     lift.removeEventListener("webkitTransitionEnd", doorAnimation);
@@ -126,12 +121,22 @@ function doorAnimation(e) {
     right_door.style.transition = `all 2.5s ease-out`;
 }
 
-function scheduledLift(floor) {
+function scheduledLift(floor, direction) {
     let selected_lift;
     let min_distance = Infinity;
 
-    for (lift of lifts) {
-        if (!lift.moving && Math.abs(floor - lift.currentFloor) < min_distance) {
+    for (let lift of lifts) {
+        // Check if the lift is already on the requested floor and not moving
+        if (lift.currentFloor === floor && !lift.moving) {
+            return lift; // Return the lift that is already on the requested floor
+        }
+
+        // Find the closest available lift that is not moving and has no active requests
+        if (
+            !lift.moving &&
+            Math.abs(floor - lift.currentFloor) < min_distance &&
+            !(activeRequests[floor] && activeRequests[floor][direction])
+        ) {
             min_distance = Math.abs(floor - lift.currentFloor);
             selected_lift = lift;
         }
@@ -139,7 +144,7 @@ function scheduledLift(floor) {
     return selected_lift;
 }
 
-function moveLift(lift, to) {
+function moveLift(lift, to, direction) {
     let distance = -1 * (to - 1) * 100;
     let lift_no = lift.id;
     let from = lift.currentFloor;
@@ -156,6 +161,18 @@ function moveLift(lift, to) {
         doorAnimation(e);
     }
     lft.style.transitionDuration = `${time}s`;
+
+    // Register the active request to prevent multiple lifts being scheduled
+    if (!activeRequests[to]) {
+        activeRequests[to] = {};
+    }
+    activeRequests[to][direction] = true;
+
+    setTimeout(() => {
+        // Free the lift after it has moved and doors have closed
+        activeRequests[to][direction] = false;
+    }, time * 1000 + 2500);
+
     console.log(
         `Lift Number: ${lift_no} \n Floor: \n From: ${from} To: ${to} \n Time: ${time} sec`
     );
@@ -164,20 +181,39 @@ function moveLift(lift, to) {
 function save_click(e) {
     let clicked_on = e.target.id;
     let n;
-    if (clicked_on.startsWith("up"))
-        n = Number(clicked_on.substring(2, clicked_on.length));
-    else if (clicked_on.startsWith("down"))
-        n = Number(clicked_on.substring(4, clicked_on.length));
-    q.push(n);
-}
+    let direction;
 
+    if (clicked_on.startsWith("up")) {
+        n = Number(clicked_on.substring(2, clicked_on.length));
+        direction = "up";
+    } else if (clicked_on.startsWith("down")) {
+        n = Number(clicked_on.substring(4, clicked_on.length));
+        direction = "down";
+    }
+
+    // Check if there's already a lift on this floor that's not moving
+    let existingLift = lifts.find(
+        (lift) => lift.currentFloor === n && !lift.moving
+    );
+
+    if (existingLift) {
+        // Trigger the door opening animation directly for the lift on this floor
+        let event = { target: { id: `l${existingLift.id}` } };
+        doorAnimation(event);
+    } else {
+        // If no lift is already present, add the request to the queue
+        if (!(activeRequests[n] && activeRequests[n][direction])) {
+            q.push({ floor: n, direction: direction });
+        }
+    }
+}
 function getButtons() {
     let up_btn_list = document.getElementsByClassName("control-btn--up");
     let down_btn_list = document.getElementsByClassName("control-btn--down");
-    for (up_btn of up_btn_list) {
+    for (let up_btn of up_btn_list) {
         up_btn.addEventListener("click", save_click);
     }
-    for (down_btn of down_btn_list) {
+    for (let down_btn of down_btn_list) {
         down_btn.addEventListener("click", save_click);
     }
 }
@@ -185,7 +221,7 @@ function getButtons() {
 function make_lifts() {
     no_of_lifts = input_lifts.value;
     createLifts(no_of_lifts);
-    for (lft of lifts) {
+    for (let lft of lifts) {
         let lift = lft.lift;
         lift.style.transform = null;
         lift.style.transitionDuration = null;
@@ -213,33 +249,35 @@ function place_lifts() {
 
 function check_for_scheduling() {
     if (q.length === 0) return;
-    floor = q.shift();
-    let lift = scheduledLift(floor);
+    let request = q.shift();
+    let floor = request.floor;
+    let direction = request.direction;
+    let lift = scheduledLift(floor, direction);
     if (!lift) {
-        q.unshift(floor);
+        q.unshift(request);
         return;
     }
-    moveLift(lift, floor);
+    moveLift(lift, floor, direction);
 }
 
 function start() {
-    if (input_lifts.value<=0 ) {
+    if (input_lifts.value <= 0) {
         alert("Number of lifts should be a number above 1");
-        document.getElementById("input-lifts").value = 0
-        return
+        document.getElementById("input-lifts").value = 0;
+        return;
     }
-    if (input_floors.value<=0 ) {
+    if (input_floors.value <= 0) {
         alert("Number of floors should be a number above 1");
-        document.getElementById("input-floors").value = 0
+        document.getElementById("input-floors").value = 0;
         return;
     }
     clearInterval(intervalId);
     q = [];
     lifts = [];
+    activeRequests = {};
     make_floors();
     make_lifts();
     place_lifts();
-    // set up buttons to listen for click event
     getButtons();
     intervalId = setInterval(check_for_scheduling, 100);
 }
