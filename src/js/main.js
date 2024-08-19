@@ -18,15 +18,17 @@ function createLifts(n) {
         let lift = document.createElement("div");
         lift.className = "lift";
         lift.id = "l" + i;
+
         let left_door = document.createElement("div");
         let right_door = document.createElement("div");
         left_door.classList.add("lift__door", "lift__door-left");
         right_door.classList.add("lift__door", "lift__door-right");
         left_door.id = "ld" + i;
         right_door.id = "rd" + i;
-        lift.style.left = `${10 + 15 * i}%`;
+
         lift.appendChild(left_door);
         lift.appendChild(right_door);
+
         let liftObj = {
             id: i,
             lift: lift,
@@ -34,6 +36,12 @@ function createLifts(n) {
             moving: false,
         };
         lifts.push(liftObj);
+
+        // Append lift to the appropriate lift-container based on currentFloor
+        let currentFloor = document.getElementById("floor" + liftObj.currentFloor);
+        let liftContainer = currentFloor.querySelector(".lift-container");
+
+        liftContainer.appendChild(lift);
     }
 }
 
@@ -44,16 +52,21 @@ function createFloor(floor_number) {
     new_div.className = "floor";
     new_div.id = "floor" + floor_number;
 
+    let liftContainer = document.createElement("div");
+    liftContainer.className = "lift-container";
+    new_div.appendChild(liftContainer);
+
     let new_up_btn = document.createElement("button");
     let up_text = document.createTextNode("U");
 
     let new_down_btn = document.createElement("button");
     let down_text = document.createTextNode("D");
-    let new_br = document.createElement("br");
+
     let new_span = document.createElement("span");
     let new_floor_text = document.createTextNode(floor_number);
     new_span.appendChild(new_floor_text);
     new_span.className = "floor__number";
+
     new_up_btn.classList.add("control-btn", "control-btn--up");
     new_down_btn.classList.add("control-btn", "control-btn--down");
     new_up_btn.appendChild(up_text);
@@ -73,14 +86,16 @@ function createFloor(floor_number) {
         new_down_btn.disabled = true;
         new_down_btn.style.cursor = "default";
     }
-    new_div.appendChild(new_up_btn);
-    new_div.appendChild(new_br);
-    new_div.appendChild(new_down_btn);
-    new_div.appendChild(new_span);
-    let new_hr = document.createElement("hr");
-    new_div.appendChild(new_hr);
+
+    newBtnContainer.appendChild(new_up_btn);
+    newBtnContainer.appendChild(new_down_btn);
+    newBtnContainer.appendChild(new_span);
+
+    new_div.appendChild(newBtnContainer);
     container.insertBefore(new_div, container.childNodes[0]);
 }
+
+
 
 function closeDoor(e) {
     let target_id = e.target.id;
