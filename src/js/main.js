@@ -13,36 +13,42 @@ form.addEventListener("click", function (e) {
 });
 
 function createLifts(n) {
-    lifts = [];
+    let lifts_lifts = [];
     for (let i = 1; i <= n; i++) {
         let lift = document.createElement("div");
         lift.className = "lift";
         lift.id = "l" + i;
-
         let left_door = document.createElement("div");
         let right_door = document.createElement("div");
         left_door.classList.add("lift__door", "lift__door-left");
         right_door.classList.add("lift__door", "lift__door-right");
         left_door.id = "ld" + i;
         right_door.id = "rd" + i;
-
         lift.appendChild(left_door);
         lift.appendChild(right_door);
-
         let liftObj = {
             id: i,
             lift: lift,
             currentFloor: 1,
             moving: false,
         };
-        lifts.push(liftObj);
-
-        // Append lift to the appropriate lift-container based on currentFloor
-        let currentFloor = document.getElementById("floor" + liftObj.currentFloor);
-        let liftContainer = currentFloor.querySelector(".lift-container");
-
+        lifts_lifts.push(liftObj);
+        const liftContainer = document.getElementById("floor1")
         liftContainer.appendChild(lift);
+
+        for (let j = 2; j <= no_of_floors; j++) {
+            let liftClone = lift.cloneNode(true);
+            liftClone.removeAttribute("id"); // Remove ID for cloned lifts
+            liftClone.style.opacity = 0; // Set opacity to 0
+
+            liftClone.querySelector(".lift__door-left").removeAttribute("id");
+            liftClone.querySelector(".lift__door-right").removeAttribute("id");
+
+            const floorContainer = document.getElementById("floor" + j);
+            floorContainer.appendChild(liftClone);
+        }
     }
+    lifts = lifts_lifts;
 }
 
 function createFloor(floor_number) {
@@ -51,10 +57,6 @@ function createFloor(floor_number) {
     let new_div = document.createElement("div");
     new_div.className = "floor";
     new_div.id = "floor" + floor_number;
-
-    let liftContainer = document.createElement("div");
-    liftContainer.className = "lift-container";
-    new_div.appendChild(liftContainer);
 
     let new_up_btn = document.createElement("button");
     let up_text = document.createTextNode("U");
@@ -89,9 +91,16 @@ function createFloor(floor_number) {
 
     newBtnContainer.appendChild(new_up_btn);
     newBtnContainer.appendChild(new_down_btn);
-    newBtnContainer.appendChild(new_span);
 
+    // create lift-container after button container
+    let liftContainer = document.createElement("div");
+    liftContainer.className = "lift-container";
+
+    // attach elements in the correct order
     new_div.appendChild(newBtnContainer);
+    new_div.appendChild(new_span);
+    new_div.appendChild(liftContainer);
+
     container.insertBefore(new_div, container.childNodes[0]);
 }
 
@@ -252,16 +261,6 @@ function make_floors() {
     }
 }
 
-function place_lifts() {
-    let first_floor = document.getElementById("floor1");
-    for (let i = lifts.length - 1; i >= 0; i--) {
-        first_floor.insertBefore(
-            lifts[i].lift,
-            first_floor.childNodes[first_floor.childNodes.length - 1]
-        );
-    }
-}
-
 function check_for_scheduling() {
     if (q.length === 0) return;
     let request = q.shift();
@@ -292,7 +291,6 @@ function start() {
     activeRequests = {};
     make_floors();
     make_lifts();
-    place_lifts();
     getButtons();
     intervalId = setInterval(check_for_scheduling, 100);
 }
