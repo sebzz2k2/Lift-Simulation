@@ -170,13 +170,21 @@ function scheduledLift(floor, direction) {
 
 function moveLift(lift, to, direction) {
     let distance = -1 * (to - 1) * 100;
+    let pixelAdjustment = to - 3; // 4 pixels adjustment
     let lift_no = lift.id;
     let from = lift.currentFloor;
     lift.currentFloor = to;
     lift.moving = true;
     let lft = lift.lift;
+
+    // Convert percentage distance to pixels and subtract 4 pixels
+    let parentHeight = lft.parentElement.offsetHeight;
+    let adjustedDistance = (distance / 100) * parentHeight - pixelAdjustment;
+
+    // Apply the adjusted transformation
+    lft.style.transform = `translateY(${adjustedDistance}px)`;
+
     lft.addEventListener("webkitTransitionEnd", doorAnimation);
-    lft.style.transform = `translateY(${distance}%)`;
     let time = 2 * Math.abs(from - to);
     if (time === 0) {
         let e = {};
@@ -200,6 +208,7 @@ function moveLift(lift, to, direction) {
     console.log(
         `Lift Number: ${lift_no} \n Floor: \n From: ${from} To: ${to} \n Time: ${time} sec`
     );
+
 }
 
 function save_click(e) {
