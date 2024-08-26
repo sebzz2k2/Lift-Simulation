@@ -104,8 +104,6 @@ function createFloor(floor_number) {
     container.insertBefore(new_div, container.childNodes[0]);
 }
 
-
-
 function closeDoor(e) {
     let target_id = e.target.id;
     let lift_no = target_id[target_id.length - 1];
@@ -137,7 +135,6 @@ function doorAnimation(e) {
     let left_door = document.getElementById("ld" + lift_no);
     let right_door = document.getElementById("rd" + lift_no);
     left_door.removeEventListener("webkitTransitionEnd", doorAnimation);
-    right_door.removeEventListener("webkitTransitionEnd", doorAnimation);
     right_door.addEventListener("webkitTransitionEnd", closeDoor);
     left_door.style.transform = `translateX(-100%)`;
     right_door.style.transform = `translateX(100%)`;
@@ -177,13 +174,10 @@ function moveLift(lift, to, direction) {
     lift.moving = true;
     let lft = lift.lift;
 
-    // Convert percentage distance to pixels and subtract 4 pixels
     let parentHeight = lft.parentElement.offsetHeight;
     let adjustedDistance = (distance / 100) * parentHeight - pixelAdjustment;
 
-    // Apply the adjusted transformation
     lft.style.transform = `translateY(${adjustedDistance}px)`;
-
     lft.addEventListener("webkitTransitionEnd", doorAnimation);
     let time = 2 * Math.abs(from - to);
     if (time === 0) {
@@ -194,23 +188,19 @@ function moveLift(lift, to, direction) {
     }
     lft.style.transitionDuration = `${time}s`;
 
-    // Register the active request to prevent multiple lifts being scheduled
     if (!activeRequests[to]) {
         activeRequests[to] = {};
     }
     activeRequests[to][direction] = true;
 
     setTimeout(() => {
-        // Free the lift after it has moved and doors have closed
         activeRequests[to][direction] = false;
     }, time * 1000 + 2500);
 
     console.log(
         `Lift Number: ${lift_no} \n Floor: \n From: ${from} To: ${to} \n Time: ${time} sec`
     );
-
 }
-
 function save_click(e) {
     let clicked_on = e.target.id;
     let n;
@@ -223,19 +213,16 @@ function save_click(e) {
         n = Number(clicked_on.substring(4, clicked_on.length));
         direction = "down";
     }
-
     // Check if there's already a lift on this floor that's not moving
     let existingLift = lifts.find(
         (lift) => lift.currentFloor === n && !lift.moving
     );
 
     if (existingLift) {
-        // Trigger the door opening animation directly for the lift on this floor
-        let event = { target: { id: `l${existingLift.id}` } };
-        doorAnimation(event);
+        q.push({ floor: n, direction: direction });
     } else {
         // If no lift is already present, add the request to the queue
-        if (!(activeRequests[n] && activeRequests[n][direction])) {
+        if ((!(activeRequests[n] && activeRequests[n][direction]))) {
             q.push({ floor: n, direction: direction });
         }
     }
@@ -276,6 +263,7 @@ function check_for_scheduling() {
     let floor = request.floor;
     let direction = request.direction;
     let lift = scheduledLift(floor, direction);
+    console.log(lift)
     if (!lift) {
         q.unshift(request);
         return;
