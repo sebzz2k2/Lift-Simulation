@@ -31,6 +31,7 @@ function createLifts(n) {
             lift: lift,
             currentFloor: 1,
             moving: false,
+            opening: false,
         };
         lifts_lifts.push(liftObj);
         const liftContainer = document.getElementById("floor1")
@@ -195,7 +196,7 @@ function moveLift(lift, to, direction) {
 
     setTimeout(() => {
         activeRequests[to][direction] = false;
-    }, time * 1000 + 2500);
+    }, time * 1000 + 5000);
 
     console.log(
         `Lift Number: ${lift_no} \n Floor: \n From: ${from} To: ${to} \n Time: ${time} sec`
@@ -217,10 +218,14 @@ function save_click(e) {
     let existingLift = lifts.find(
         (lift) => lift.currentFloor === n && !lift.moving
     );
-
+// add condition to check
     if (existingLift) {
+        if (activeRequests?.[n]?.[direction]) {
+            return;
+        }
         q.push({ floor: n, direction: direction });
     } else {
+        console.log("ALLA")
         // If no lift is already present, add the request to the queue
         if ((!(activeRequests[n] && activeRequests[n][direction]))) {
             q.push({ floor: n, direction: direction });
@@ -263,7 +268,6 @@ function check_for_scheduling() {
     let floor = request.floor;
     let direction = request.direction;
     let lift = scheduledLift(floor, direction);
-    console.log(lift)
     if (!lift) {
         q.unshift(request);
         return;
