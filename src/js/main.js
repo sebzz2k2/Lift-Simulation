@@ -60,10 +60,10 @@ function createFloor(floor_number) {
     new_div.id = "floor" + floor_number;
 
     let new_up_btn = document.createElement("button");
-    let up_text = document.createTextNode("U");
+    let up_text = document.createTextNode("\u2191");
 
     let new_down_btn = document.createElement("button");
-    let down_text = document.createTextNode("D");
+    let down_text = document.createTextNode("\u2193");
 
     let new_span = document.createElement("span");
     let new_floor_text = document.createTextNode(floor_number);

@@ -66,7 +66,7 @@ body {
     position: relative;
     padding-left: 10px; 
     padding-right: 10px;
-    border-top: #444444 1px solid;
+    border-top: #444444 2px solid;
 }
 
 .lift-container {
@@ -86,7 +86,7 @@ body {
     margin-left: 20px;
     border-radius: 8px;
     overflow: hidden;
-    /*border: 1px solid #333;*/
+    border: 1px solid red;
 }
 
 .btnContainer {
