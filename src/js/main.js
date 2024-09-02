@@ -113,8 +113,8 @@ function closeDoor(e) {
     right_door.removeEventListener("webkitTransitionEnd", closeDoor);
     left_door.style.transform = `translateX(0)`;
     right_door.style.transform = `translateX(0)`;
-    left_door.style.transition = `all 2.5s ease-out`;
-    right_door.style.transition = `all 2.5s ease-out`;
+    left_door.style.transition = `all 2.5s`;
+    right_door.style.transition = `all 2.5s`;
     setTimeout(() => {
         stop_lift(lift_no);
     }, 2500);
@@ -139,8 +139,8 @@ function doorAnimation(e) {
     right_door.addEventListener("webkitTransitionEnd", closeDoor);
     left_door.style.transform = `translateX(-100%)`;
     right_door.style.transform = `translateX(100%)`;
-    left_door.style.transition = `all 2.5s ease-out`;
-    right_door.style.transition = `all 2.5s ease-out`;
+    left_door.style.transition = `all 2.5s linear`;
+    right_door.style.transition = `all 2.5s linear`;
 }
 
 function scheduledLift(floor, direction) {
@@ -168,15 +168,13 @@ function scheduledLift(floor, direction) {
 
 function moveLift(lift, to, direction) {
     let distance = -1 * (to - 1) * 100;
-    let pixelAdjustment = to - 3; // 4 pixels adjustment
-    let lift_no = lift.id;
+    let lift_no = lift.id
     let from = lift.currentFloor;
     lift.currentFloor = to;
     lift.moving = true;
     let lft = lift.lift;
-
-    let parentHeight = lft.parentElement.offsetHeight;
-    let adjustedDistance = (distance / 100) * parentHeight - pixelAdjustment;
+    let parentHeight = lft.parentElement.offsetHeight
+    let adjustedDistance = (distance /100)* parentHeight ;
 
     lft.style.transform = `translateY(${adjustedDistance}px)`;
     lft.addEventListener("webkitTransitionEnd", doorAnimation);
@@ -187,7 +185,7 @@ function moveLift(lift, to, direction) {
         e.target.id = `l${lift_no}`;
         doorAnimation(e);
     }
-    lft.style.transitionDuration = `${time}s`;
+    lft.style.transition = `all ${time}s linear`
 
     if (!activeRequests[to]) {
         activeRequests[to] = {};
